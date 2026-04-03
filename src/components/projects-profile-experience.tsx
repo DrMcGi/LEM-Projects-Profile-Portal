@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import type { MouseEvent } from "react";
 
@@ -78,6 +79,135 @@ function MagneticAnchor({ href, label, variant = "primary", target, rel }: Magne
   );
 }
 
+function MobileProfileViewer({ profilePdfPath }: { profilePdfPath: string }) {
+  const [pageCount, setPageCount] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageImageUrl, setPageImageUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    let revokedUrl: string | null = null;
+    let cancelled = false;
+
+    async function renderPage() {
+      try {
+        setIsLoading(true);
+        setHasError(false);
+
+        const pdfjs = await import("pdfjs-dist");
+
+        pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+          "pdfjs-dist/build/pdf.worker.mjs",
+          import.meta.url,
+        ).toString();
+
+        const loadingTask = pdfjs.getDocument(profilePdfPath);
+        const pdf = await loadingTask.promise;
+
+        if (cancelled) {
+          return;
+        }
+
+        setPageCount(pdf.numPages);
+
+        const safePage = Math.min(currentPage, pdf.numPages);
+        if (safePage !== currentPage) {
+          setCurrentPage(safePage);
+        }
+
+        const page = await pdf.getPage(safePage);
+        const viewport = page.getViewport({ scale: 1.4 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+
+        if (!context) {
+          throw new Error("Canvas context unavailable");
+        }
+
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
+
+        if (cancelled) {
+          return;
+        }
+
+        revokedUrl = canvas.toDataURL("image/png");
+        setPageImageUrl(revokedUrl);
+      } catch {
+        if (!cancelled) {
+          setHasError(true);
+          setPageImageUrl(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void renderPage();
+
+    return () => {
+      cancelled = true;
+      if (revokedUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(revokedUrl);
+      }
+    };
+  }, [currentPage, profilePdfPath]);
+
+  return (
+    <div className="mobile-profile-viewer rounded-4xl border border-white/10 bg-white/6 p-4 md:hidden">
+      <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+        <div>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-300">Mobile viewer</div>
+          <div className="mt-1 text-sm text-stone-300">
+            {pageCount ? `Page ${currentPage} of ${pageCount}` : "Loading pages"}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+            disabled={currentPage <= 1 || isLoading}
+            className="mobile-pdf-button"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((page) => (pageCount ? Math.min(pageCount, page + 1) : page + 1))}
+            disabled={!pageCount || currentPage >= pageCount || isLoading}
+            className="mobile-pdf-button"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 overflow-hidden rounded-3xl bg-white shadow-[0_18px_40px_-24px_rgba(0,0,0,0.45)]">
+        {hasError ? (
+          <div className="flex min-h-96 flex-col items-center justify-center px-5 py-10 text-center text-stone-700">
+            <div className="text-lg font-semibold text-stone-900">Unable to render the preview on this device.</div>
+            <a href={profilePdfPath} target="_blank" rel="noreferrer" className="mt-4 inline-flex rounded-full border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-800">
+              Open the full profile
+            </a>
+          </div>
+        ) : isLoading || !pageImageUrl ? (
+          <div className="flex min-h-96 items-center justify-center px-5 py-10 text-center text-sm font-semibold uppercase tracking-[0.18em] text-stone-500">
+            Loading page...
+          </div>
+        ) : (
+          <img src={pageImageUrl} alt={`LEM Projects business profile page ${currentPage}`} className="h-auto w-full object-contain" />
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProfileViewport({ profilePdfPath }: { profilePdfPath: string | null }) {
   if (!profilePdfPath) {
     return (
@@ -106,7 +236,8 @@ function ProfileViewport({ profilePdfPath }: { profilePdfPath: string | null }) 
           Live profile view
         </div>
       </div>
-      <div className="h-[70vh] min-h-136 bg-white">
+      <MobileProfileViewer profilePdfPath={profilePdfPath} />
+      <div className="hidden h-[70vh] min-h-136 bg-white md:block">
         <iframe title="LEM Projects business profile" src={`${profilePdfPath}#view=FitH`} className="h-full w-full border-0" />
       </div>
     </div>
