@@ -3,7 +3,38 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
-import type { MouseEvent } from "react";
+import type { MouseEvent, ReactNode } from "react";
+
+const introCards = [
+  {
+    title: "Ownership",
+    bullets: ["100% Black woman-owned", "Level 1 B-BBEE"],
+  },
+  {
+    title: "Capabilities",
+    bullets: ["Reliable", "Innovative", "Strategic", "Expertise."],
+  },
+  {
+    title: "Contact",
+    description: "Reach out directly for opportunities and discussions.",
+    contacts: true,
+  },
+  {
+    title: "LEM CONNECT",
+    description:
+      "Empowering graduates with knowledge, mindset, and confidence to not just enter the workplace but to excel, lead, and thrive.",
+    cta: {
+      href: "https://teams.live.com/l/community/FEAyHPvlEsEDMEGzAM?v=g1",
+      label: "CLICK TO JOIN",
+    },
+  },
+] as const;
+
+const profileContents = [
+  { label: "Company overview", page: 2 },
+  { label: "Service offering", page: 4 },
+  { label: "Direct contact details", page: 7 },
+] as const;
 
 type ProjectsProfileExperienceProps = {
   logoPath: string | null;
@@ -79,12 +110,100 @@ function MagneticAnchor({ href, label, variant = "primary", target, rel }: Magne
   );
 }
 
-function MobileProfileViewer({ profilePdfPath }: { profilePdfPath: string }) {
+function ContactIcon({ kind }: { kind: "whatsapp" | "phone" | "mail" }) {
+  if (kind === "whatsapp") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 fill-current">
+        <path d="M20.52 3.48A11.84 11.84 0 0 0 12.07 0C5.55 0 .24 5.3.24 11.82c0 2.08.54 4.11 1.57 5.91L0 24l6.47-1.7a11.8 11.8 0 0 0 5.6 1.43h.01c6.52 0 11.83-5.3 11.83-11.82 0-3.16-1.23-6.12-3.39-8.43Zm-8.45 18.26h-.01a9.8 9.8 0 0 1-4.98-1.36l-.36-.21-3.84 1 1.03-3.74-.24-.38a9.82 9.82 0 0 1-1.5-5.23C2.17 6.41 6.58 2 12 2c2.62 0 5.08 1.01 6.93 2.86a9.72 9.72 0 0 1 2.88 6.94c0 5.42-4.41 9.84-9.74 9.84Zm5.4-7.38c-.29-.15-1.74-.86-2.01-.96-.27-.1-.47-.15-.66.15-.2.29-.76.96-.94 1.15-.17.2-.35.22-.64.08-.29-.15-1.24-.45-2.35-1.43-.87-.77-1.45-1.72-1.63-2.01-.17-.29-.02-.45.13-.6.14-.14.29-.35.44-.52.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.52-.08-.15-.66-1.59-.91-2.18-.24-.57-.48-.49-.66-.5h-.56c-.2 0-.52.08-.79.37-.27.29-1.04 1.01-1.04 2.47 0 1.45 1.06 2.86 1.2 3.05.15.2 2.08 3.18 5.05 4.46.71.31 1.27.49 1.7.63.71.23 1.35.2 1.86.12.57-.08 1.74-.71 1.99-1.4.25-.69.25-1.28.17-1.41-.07-.12-.27-.2-.56-.34Z" />
+      </svg>
+    );
+  }
+
+  if (kind === "phone") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 fill-current">
+        <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1C10.61 21 3 13.39 3 4c0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.58.11.35.03.74-.25 1.01l-2.2 2.2Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4 fill-current">
+      <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4.24-7.47 4.67a1 1 0 0 1-1.06 0L4 8.24V6l8 5 8-5v2.24Z" />
+    </svg>
+  );
+}
+
+function ContactChip({ href, icon, value }: { href?: string; icon: ReactNode; value: string }) {
+  const content = (
+    <>
+      <span className="text-teal-200">{icon}</span>
+      <span>{value}</span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={href.startsWith("http") ? "_blank" : undefined}
+        rel={href.startsWith("http") ? "noreferrer" : undefined}
+        className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/6 px-3 py-2 text-sm font-semibold text-stone-100 transition hover:border-teal-300/40 hover:bg-white/10"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return <div className="inline-flex items-center gap-2 rounded-full border border-white/14 bg-white/6 px-3 py-2 text-sm font-semibold text-stone-100">{content}</div>;
+}
+
+function IntroContactRow({ href, icon, value }: { href?: string; icon: ReactNode; value: string }) {
+  const content = (
+    <>
+      <span className="text-teal-700">{icon}</span>
+      <span className="min-w-0 break-all">{value}</span>
+    </>
+  );
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        target={href.startsWith("http") ? "_blank" : undefined}
+        rel={href.startsWith("http") ? "noreferrer" : undefined}
+        className="flex w-full items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-700 transition hover:border-teal-300 hover:bg-teal-50"
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return <div className="flex w-full items-center gap-2 rounded-2xl border border-stone-200 bg-stone-50 px-3 py-2 text-sm font-semibold text-stone-700">{content}</div>;
+}
+
+function MobileProfileViewer({
+  profilePdfPath,
+  selectedPage,
+  onPageChange,
+}: {
+  profilePdfPath: string;
+  selectedPage: number;
+  onPageChange: (page: number) => void;
+}) {
   const [pageCount, setPageCount] = useState<number | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(selectedPage);
   const [pageImageUrl, setPageImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setCurrentPage(selectedPage);
+  }, [selectedPage]);
+
+  useEffect(() => {
+    onPageChange(currentPage);
+  }, [currentPage, onPageChange]);
 
   useEffect(() => {
     let revokedUrl: string | null = null;
@@ -208,7 +327,15 @@ function MobileProfileViewer({ profilePdfPath }: { profilePdfPath: string }) {
   );
 }
 
-function ProfileViewport({ profilePdfPath }: { profilePdfPath: string | null }) {
+function ProfileViewport({
+  profilePdfPath,
+  activePage,
+  onPageChange,
+}: {
+  profilePdfPath: string | null;
+  activePage: number;
+  onPageChange: (page: number) => void;
+}) {
   if (!profilePdfPath) {
     return (
       <div className="profile-empty-state flex min-h-112 flex-col items-center justify-center rounded-4xl border border-dashed border-white/20 px-6 py-10 text-center">
@@ -236,9 +363,9 @@ function ProfileViewport({ profilePdfPath }: { profilePdfPath: string | null }) 
           Live profile view
         </div>
       </div>
-      <MobileProfileViewer profilePdfPath={profilePdfPath} />
+      <MobileProfileViewer profilePdfPath={profilePdfPath} selectedPage={activePage} onPageChange={onPageChange} />
       <div className="hidden h-[70vh] min-h-136 bg-white md:block">
-        <iframe title="LEM Projects business profile" src={`${profilePdfPath}#view=FitH`} className="h-full w-full border-0" />
+        <iframe key={activePage} title="LEM Projects business profile" src={`${profilePdfPath}#page=${activePage}&view=FitH`} className="h-full w-full border-0" />
       </div>
     </div>
   );
@@ -246,6 +373,13 @@ function ProfileViewport({ profilePdfPath }: { profilePdfPath: string | null }) 
 
 export function ProjectsProfileExperience({ logoPath, profilePdfPath }: ProjectsProfileExperienceProps) {
   const profileAvailable = Boolean(profilePdfPath);
+  const [activeProfilePage, setActiveProfilePage] = useState<number>(1);
+  const [selectedContentPage, setSelectedContentPage] = useState<number | null>(null);
+
+  const handleContentSelection = (page: number) => {
+    setActiveProfilePage(page);
+    setSelectedContentPage((currentPage) => (currentPage === page ? null : page));
+  };
 
   return (
     <main className="relative isolate overflow-x-hidden">
@@ -293,20 +427,44 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
                     <span className="text-sm font-bold tracking-[0.16em] text-teal-800">LEM</span>
                   )}
                 </div>
-                <div className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700">
+                <a href="#business-profile" className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-amber-700">
                   Business profile
-                </div>
+                </a>
               </div>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                {[
-                  ["Business profile", "A complete company overview in one document."],
-                  ["Capabilities", "A direct look at LEM Projects and its service focus."],
-                  ["Contact", "Reach out directly for opportunities and discussions."],
-                ].map(([title, description]) => (
-                  <div key={title} className="rounded-[1.4rem] border border-stone-200 bg-white/88 px-4 py-4">
-                    <div className="text-sm font-bold uppercase tracking-[0.14em] text-stone-900">{title}</div>
-                    <div className="mt-2 text-sm leading-relaxed text-stone-600">{description}</div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {introCards.map((card) => (
+                  <div key={card.title} className="flex h-full min-h-56 flex-col rounded-[1.4rem] border border-stone-200 bg-white/88 px-4 py-4">
+                    <div className="text-[0.95rem] font-bold uppercase leading-tight tracking-[0.12em] text-stone-900">{card.title}</div>
+                    {"bullets" in card ? (
+                      <ul className="mt-3 space-y-2 text-sm leading-relaxed text-stone-600">
+                        {card.bullets.map((bullet) => (
+                          <li key={bullet} className="flex items-start gap-2">
+                            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-700" />
+                            <span>{bullet}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <div className="mt-2 text-sm leading-relaxed text-stone-600">{card.description}</div>
+                    )}
+                    {"contacts" in card ? (
+                      <div className="mt-4 space-y-2">
+                        <IntroContactRow href="https://wa.me/27764807410" icon={<ContactIcon kind="whatsapp" />} value="0764807410" />
+                        <IntroContactRow href="tel:0823740090" icon={<ContactIcon kind="phone" />} value="0823740090" />
+                        <IntroContactRow icon={<ContactIcon kind="mail" />} value="info@lemprojects.co.za" />
+                      </div>
+                    ) : null}
+                    {"cta" in card ? (
+                      <a
+                        href={card.cta.href}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="intro-panel-button mt-auto w-full"
+                      >
+                        {card.cta.label}
+                      </a>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -315,6 +473,7 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
         </motion.section>
 
         <motion.section
+          id="business-profile"
           variants={staggerParent}
           initial="hidden"
           whileInView="show"
@@ -333,14 +492,19 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
               </p>
 
               <div className="space-y-3">
-                {[
-                  "Company overview",
-                  "Service offering",
-                  "Direct contact details",
-                ].map((item) => (
-                  <div key={item} className="rounded-[1.25rem] border border-white/10 bg-white/6 px-4 py-3 text-sm text-stone-200">
-                    {item}
-                  </div>
+                {profileContents.map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleContentSelection(item.page)}
+                    className={`w-full rounded-[1.25rem] border px-4 py-3 text-left text-sm transition ${
+                      selectedContentPage === item.page
+                        ? "border-teal-300/35 bg-teal-400/12 text-white"
+                        : "border-white/10 bg-white/6 text-stone-200 hover:border-white/18 hover:bg-white/8"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
                 ))}
               </div>
 
@@ -352,7 +516,7 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
             </motion.aside>
 
             <motion.div variants={revealUp}>
-              <ProfileViewport profilePdfPath={profilePdfPath} />
+              <ProfileViewport profilePdfPath={profilePdfPath} activePage={activeProfilePage} onPageChange={setActiveProfilePage} />
             </motion.div>
           </div>
         </motion.section>
@@ -372,7 +536,7 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
           </div>
           <div className="relative z-10 grid gap-8 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
             <motion.div variants={revealUp} className="final-mark">
-              <div className="text-xs uppercase tracking-[0.24em] text-teal-300">Start here</div>
+              <div className="text-xs uppercase tracking-[0.24em] text-teal-300">Contact us</div>
               <div className="final-mark-shell mt-5">
                 {logoPath ? (
                   <Image src={logoPath} alt="LEM Projects logo" width={360} height={220} className="mx-auto h-auto w-full max-w-[16rem] object-contain" />
@@ -392,8 +556,11 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
               <motion.p variants={revealUp} className="relative z-10 mt-6 max-w-3xl text-lg leading-relaxed text-stone-200">
                 Connect with LEM Projects to discuss requirements, opportunities, and the right path forward for your project needs.
               </motion.p>
-              <motion.div variants={revealUp} className="relative z-10 mt-8 flex flex-wrap gap-3">
+              <motion.div variants={revealUp} className="relative z-10 mt-8 flex flex-wrap items-center gap-3">
                 <MagneticAnchor href="mailto:info@lemprojects.co.za" label="Start a conversation" variant="secondary" />
+                <ContactChip href="https://wa.me/27764807410" icon={<ContactIcon kind="whatsapp" />} value="0764807410" />
+                <ContactChip href="tel:0823740090" icon={<ContactIcon kind="phone" />} value="0823740090" />
+                <ContactChip icon={<ContactIcon kind="mail" />} value="info@lemprojects.co.za" />
               </motion.div>
             </div>
           </div>
