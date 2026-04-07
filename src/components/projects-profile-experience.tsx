@@ -398,7 +398,7 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
           animate="show"
           className="rounded-[2.5rem] border border-white/60 bg-white/58 px-5 py-6 shadow-[0_30px_90px_-45px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-8 sm:py-8"
         >
-          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end">
+          <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
             <div>
               <motion.div variants={revealUp} className="inline-flex items-center gap-3 rounded-full border border-teal-200 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-teal-800">
                 <span className="signal-dot" />
