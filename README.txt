@@ -1,2 +1,2 @@
-LEM Projects placeholder workspace.
-This division website is planned and can be scaffolded here next.
+LEM Projects Profile Portal workspace.
+This repository contains the LEM Projects business-profile portal experience.
