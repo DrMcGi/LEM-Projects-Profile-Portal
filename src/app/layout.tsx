@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lem-projects.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://lem-projects-profile-portal.vercel.app";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
