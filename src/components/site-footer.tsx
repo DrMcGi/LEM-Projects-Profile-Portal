@@ -48,7 +48,7 @@ export function SiteFooter() {
                 DrMcGi
               </button>
 
-              <span className={`absolute bottom-full left-1/2 z-20 mb-2 w-[min(92vw,22rem)] -translate-x-1/2 rounded-xl border border-teal-200 bg-white p-3 text-left text-xs leading-relaxed text-stone-700 shadow-lg transition duration-200 ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100`}>
+              <span className={`absolute bottom-full left-1/2 z-20 mb-2 hidden w-[min(92vw,22rem)] -translate-x-1/2 rounded-xl border border-teal-200 bg-white p-3 text-left text-xs leading-relaxed text-stone-700 shadow-lg transition duration-200 sm:block ${isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"} group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100`}>
                 <span className="mt-1 block font-semibold text-teal-800">DrMcGi&apos;s SaaS Atelier (Pty) Ltd.</span>
                 <span className="mt-1 block">Phone: 064 921 1745</span>
                 <span className="block">Website: www.drmcgi.co.za</span>
@@ -56,6 +56,12 @@ export function SiteFooter() {
               </span>
             </span>
           </p>
+        </div>
+        <div className={`mt-3 overflow-hidden rounded-xl border border-teal-200 bg-white p-3 text-left text-xs leading-relaxed text-stone-700 shadow-sm transition sm:hidden ${isOpen ? "block" : "hidden"}`}>
+          <span className="mt-1 block font-semibold text-teal-800">DrMcGi&apos;s SaaS Atelier (Pty) Ltd.</span>
+          <span className="mt-1 block">Phone: 064 921 1745</span>
+          <span className="block">Website: www.drmcgi.co.za</span>
+          <span className="block">Email: giftk.rantho@gmail.com</span>
         </div>
       </div>
     </footer>
