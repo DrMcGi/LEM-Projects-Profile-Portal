@@ -399,7 +399,7 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
           className="rounded-[2.5rem] border border-white/60 bg-white/58 px-5 py-6 shadow-[0_30px_90px_-45px_rgba(0,0,0,0.35)] backdrop-blur-sm sm:px-8 sm:py-8"
         >
           <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-            <div>
+            <div className="flex h-full flex-col">
               <motion.div variants={revealUp} className="inline-flex items-center gap-3 rounded-full border border-teal-200 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-teal-800">
                 <span className="signal-dot" />
                 LEM Projects profile portal
@@ -416,6 +416,15 @@ export function ProjectsProfileExperience({ logoPath, profilePdfPath }: Projects
               <motion.p variants={revealUp} className="mt-4 max-w-2xl text-base leading-relaxed text-stone-600 sm:text-lg">
                 Everything you need to know is presented in one place, with direct access to contact details when you are ready to talk.
               </motion.p>
+              <motion.div variants={revealUp} className="mt-12 lg:mt-auto lg:pt-10">
+                <a
+                  href="https://www.lemholding.co.za"
+                  className="inline-flex items-center gap-3 rounded-full border border-teal-200 bg-white/75 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-teal-800 transition hover:bg-teal-50"
+                >
+                  <span className="signal-dot" />
+                  LEM Holding - Home Page
+                </a>
+              </motion.div>
             </div>
 
             <motion.div variants={revealUp} className="rounded-4xl border border-stone-200/80 bg-stone-50/90 p-5 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.28)]">
