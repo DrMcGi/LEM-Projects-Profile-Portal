@@ -33,7 +33,7 @@ const introCards = [
 const profileContents = [
   { label: "Company overview", page: 2 },
   { label: "Service offering", page: 4 },
-  { label: "Direct contact details", page: 7 },
+  { label: "Direct contact details", page: 8 },
 ] as const;
 
 type ProjectsProfileExperienceProps = {
